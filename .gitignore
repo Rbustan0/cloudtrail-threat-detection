@@ -1,0 +1,24 @@
+# AWS credentials and config
+.aws/
+credentials
+*.pem
+*.key
+
+# Environment variables
+.env
+.env.*
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# Output files
+findings/*.json
+findings/*.txt
+findings/*.csv
+
+# OS clutter
+.DS_Store
