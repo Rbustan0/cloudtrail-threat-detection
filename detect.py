@@ -17,7 +17,15 @@ SUSPICIOUS_EVENTS = [
     "PutBucketPolicy",  # S3 bucket policy changes
     "AuthorizeSecurityGroup",  # Firewall rule changes
     "CreateAccessKey",
-    "AttachUserPolicy"  # Privilege escalation attempt
+    "AttachUserPolicy",  # Privilege escalation attempt
+    "AssumeRole"  # Role assumption - lateral movement indicator
+]
+
+WHITELISTED_SOURCES = [
+    "resource-explorer-2.amazonaws.com",
+    "aws-resource-explorer-2.amazonaws.com",
+    "config.amazonaws.com",
+    "cloudtrail.amazonaws.com",
 ]
 
 
@@ -27,13 +35,22 @@ def get_cloudtrail_events(region, hours_back):
     client = boto3.client("cloudtrail", region_name=region)
     start_time = datetime.now(timezone.utc) - timedelta(hours=hours_back)
 
-    response = client.lookup_events(
-        StartTime=start_time,
-        EndTime=datetime.now(timezone.utc),
-        MaxResults=50
-    )
+    events = []
+    kwargs = {
+        "StartTime": start_time,
+        "EndTime": datetime.now(timezone.utc),
+        "MaxResults": 50
+    }
 
-    return response.get("Events", [])
+    while True:
+        response = client.lookup_events(**kwargs)
+        events.extend(response.get("Events", []))
+        next_token = response.get("NextToken")
+        if not next_token:
+            break
+        kwargs["NextToken"] = next_token
+
+    return events
 
 
 def analyze_events(events):
@@ -45,7 +62,12 @@ def analyze_events(events):
         event_name = event.get("EventName", "")
         username = event.get("Username", "Unknown")
         event_time = event.get("EventTime", "")
-        source_ip = json.loads(event.get("CloudTrailEvent", "{}")).get("sourceIPAddress", "Unknown")
+        cloud_trail_event = json.loads(event.get("CloudTrailEvent", "{}"))
+        source_ip = cloud_trail_event.get("sourceIPAddress", "Unknown")
+
+        # Skip known safe AWS service sources
+        if source_ip in WHITELISTED_SOURCES:
+            continue
 
         if event_name in SUSPICIOUS_EVENTS:
             findings.append({
@@ -70,12 +92,13 @@ def save_findings(findings):
     print(f"Findings saved to {output_path}")
     return output_path
 
+
 def main():
 
     print(f"Pulling CloudTrail events from the last {HOURS_BACK} hours...")
 
     events = get_cloudtrail_events(REGION, HOURS_BACK)
-    print(f"Found {len(events)} events. Analyzing...")  
+    print(f"Found {len(events)} events. Analyzing...")
 
     findings = analyze_events(events)
 
