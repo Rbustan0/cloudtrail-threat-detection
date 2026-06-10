@@ -92,7 +92,7 @@ def analyze_events(events):
 def save_findings(findings):
     """Write findings to the findings folder"""
     timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
-    output_path = f"findings/findings_{timestamp}"
+    output_path = f"findings/findings_{timestamp}.json"
 
     with open(output_path, "w") as f:
         json.dump(findings, f, indent=2)

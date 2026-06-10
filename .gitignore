@@ -16,9 +16,7 @@ __pycache__/
 venv/
 
 # Output files
-findings/*.json
-findings/*.txt
-findings/*.csv
+findings/
 
 # OS clutter
 .DS_Store

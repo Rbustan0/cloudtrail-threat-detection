@@ -1,0 +1,53 @@
+{
+    "Records": [
+        {
+            "eventVersion": "1.11",
+            "userIdentity": {
+                "type": "IAMUser",
+                "principalId": "AIDAEXAMPLEID123",
+                "arn": "arn:aws:iam::123456789012:user/example-user",
+                "accountId": "123456789012",
+                "userName": "example-user"
+            },
+            "eventTime": "2026-06-10T09:00:00Z",
+            "eventSource": "iam.amazonaws.com",
+            "eventName": "CreateAccessKey",
+            "awsRegion": "us-east-1",
+            "sourceIPAddress": "203.0.113.1",
+            "requestParameters": {
+                "userName": "example-user"
+            },
+            "responseElements": null,
+            "requestID": "example-request-id-1234",
+            "eventID": "example-event-id-5678",
+            "readOnly": false,
+            "eventType": "AwsApiCall",
+            "managementEvent": true,
+            "eventCategory": "Management"
+        },
+        {
+            "eventVersion": "1.11",
+            "userIdentity": {
+                "type": "Root",
+                "principalId": "123456789012",
+                "arn": "arn:aws:iam::123456789012:root",
+                "accountId": "123456789012"
+            },
+            "eventTime": "2026-06-10T09:05:00Z",
+            "eventSource": "cloudtrail.amazonaws.com",
+            "eventName": "StopLogging",
+            "awsRegion": "us-east-1",
+            "sourceIPAddress": "203.0.113.2",
+            "requestParameters": {
+                "name": "example-trail"
+            },
+            "responseElements": null,
+            "requestID": "example-request-id-9012",
+            "eventID": "example-event-id-3456",
+            "readOnly": false,
+            "eventType": "AwsApiCall",
+            "managementEvent": true,
+            "eventCategory": "Management"
+        }
+    ]
+}
